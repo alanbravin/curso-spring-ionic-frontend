@@ -34,7 +34,8 @@ export class ProfilePage {
       this.clienteService.findByEmail(localUser.email)
         .subscribe(response => {
           this.cliente = response;
-          this.getImageIfExists();
+          this.cliente.imageUrl = API_CONFIG.bucketBaseUrl + '/cp' + this.cliente.id + ".jpg";
+          //this.getImageIfExists();
         },
         error => {
           if (error.status == 403) {
@@ -45,12 +46,16 @@ export class ProfilePage {
       this.navCtrl.setRoot('HomePage');
     }
   }
-
+/*
   getImageIfExists() {
     this.clienteService.getImageFromBucket(this.cliente.id)
       .subscribe(response => {
+        console.log('deu certo');
         this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
       },
-      error => {});
+      error => {
+        console.log('deu errado ' + this.cliente.id);
+      });
   }
+  */
 }
