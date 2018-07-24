@@ -5,6 +5,8 @@ import { CidadeService } from '../../services/domain/cidade.service';
 import { EstadoService } from '../../services/domain/estado.service';
 import { EstadoDTO } from '../../models/estado.dto';
 import { CidadeDTO } from '../../models/cidade.dto';
+import { ClienteService } from '../../services/domain/cliente.service';
+import { AlertController } from '../../../node_modules/ionic-angular/components/alert/alert-controller';
 
 /**
  * Generated class for the SignupPage page.
@@ -29,7 +31,10 @@ export class SignupPage {
     public navParams: NavParams,
     public formBuilder: FormBuilder,
     public cidadeService : CidadeService,
-    public estadoService : EstadoService) {
+    public estadoService : EstadoService,
+    public clienteService : ClienteService,
+    public alertCtrl : AlertController
+  ) {
 
       this.formGroup = this.formBuilder.group({
         nome: ['Alan', [Validators.required, Validators.minLength(5), Validators.maxLength(120)]],
@@ -75,7 +80,29 @@ export class SignupPage {
   }
 
   signupUser() {
-    console.log('Passou pelo SignupPage');
+    this.clienteService.insert(this.formGroup.value).subscribe(
+      response => {
+        this.showInsertOk();
+      },
+      error => {}
+    );
   }
 
+  showInsertOk() {
+    let alert = this.alertCtrl.create({
+      title: "Sucesso!",
+      message: "Cadastro efetuado com sucesso!",
+      enableBackdropDismiss: false,
+      buttons: [
+        {
+          text: "Ok",
+          handler: () => {
+            this.navCtrl.pop();
+          }
+        }
+      ]
+    });
+
+    alert.present();
+  }
 }
