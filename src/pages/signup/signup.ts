@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators} from '@angular/forms';
 import { CidadeService } from '../../services/domain/cidade.service';
 import { EstadoService } from '../../services/domain/estado.service';
@@ -33,7 +33,8 @@ export class SignupPage {
     public cidadeService : CidadeService,
     public estadoService : EstadoService,
     public clienteService : ClienteService,
-    public alertCtrl : AlertController
+    public alertCtrl : AlertController,
+    public menu: MenuController
   ) {
 
       this.formGroup = this.formBuilder.group({
@@ -65,6 +66,14 @@ export class SignupPage {
       error => {}
     );
 
+  }
+
+  ionViewWillEnter() {
+    this.menu.swipeEnable(false);
+  }
+
+  ionViewDidLeave() {
+    this.menu.swipeEnable(true);
   }
 
   updateCidades() {
