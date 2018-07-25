@@ -4,12 +4,6 @@ import { ProdutoDTO } from '../../models/produto.dto';
 import { ProdutoService } from '../../services/domain/produto.service';
 import { API_CONFIG } from '../../config/api.config';
 
-/**
- * Generated class for the ProdutosPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -18,7 +12,8 @@ import { API_CONFIG } from '../../config/api.config';
 })
 export class ProdutosPage {
 
-  items: ProdutoDTO[];
+  items: ProdutoDTO[] = [];
+  page: number = 0;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
@@ -34,11 +29,15 @@ export class ProdutosPage {
     let categoria_id = this.navParams.get("categoria_id");
     let loader = this.presentLoading();
 
-    this.produtoService.findByCategoria(categoria_id).subscribe(
+    this.produtoService.findByCategoria(categoria_id, this.page, 10).subscribe(
       response => {
-        this.items = response['content'];
+        let start = this.items.length;
+        this.items = this.items.concat(response['content']);
         loader.dismiss();
-        this.loadImageUrls();
+        console.log(this.page);
+        console.log(this.items);
+        let end = this.items.length - 1;
+        this.loadImageUrls(start, end);
       },
       error => {
         loader.dismiss();
@@ -46,8 +45,8 @@ export class ProdutosPage {
     );
   }
 
-  loadImageUrls() {
-    for (var i=0; i<this.items.length; i++) {
+  loadImageUrls(start: number, end: number) {
+    for (var i=start; i<end; i++) {
       let item = this.items[i];
 
       this.produtoService.getSmallImageFromBucket(item.id).subscribe(
@@ -73,9 +72,19 @@ export class ProdutosPage {
   }
 
   doRefresh(refresher) {
+    this.page = 0;
+    this.items = [];
     this.loadData();
     setTimeout(() => {
       refresher.complete();
-    }, 10000);
+    }, 1000);
+  }
+
+  doInfinite(infiniteScroll) {
+    this.page++;
+    this.loadData();
+    setTimeout(() => {      
+      infiniteScroll.complete();
+    }, 1000);
   }
 }
