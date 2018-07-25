@@ -6,6 +6,7 @@ import { CartItem } from '../../models/cart-item';
 import { CartService } from '../../services/domain/cart.service';
 import { ClienteService } from '../../services/domain/cliente.service';
 import { ClienteDTO } from '../../models/cliente.dto';
+import { PedidoService } from '../../services/domain/pedido.service';
 
 @IonicPage()
 @Component({
@@ -23,7 +24,8 @@ export class OrderConfirmationPage {
     public navCtrl: NavController, 
     public navParams: NavParams,
     public cartService: CartService,
-    public clienteService: ClienteService) {
+    public clienteService: ClienteService,
+    public pedidoService: PedidoService) {
       this.pedido = navParams.get("pedido");
   }
 
@@ -48,5 +50,23 @@ export class OrderConfirmationPage {
 
   total() : number {
     return this.cartService.total();
+  }
+
+  checkout() {
+    this.pedidoService.insert(this.pedido).subscribe(
+      response => {
+        console.log(response.headers.get('location'));
+        this.cartService.createOrClearCart();
+      },
+      error => {
+        if (error.status == 403) {
+          this.navCtrl.setRoot("HomePage");
+        }
+      }
+    );
+  }
+
+  back() {
+    this.navCtrl.setRoot("CartPage");
   }
 }
